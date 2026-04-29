@@ -148,6 +148,7 @@ function LayerPanel({ layerKey }) {
   const log = useCallback(m => setLogs(p => [...p, m]), []);
   const target = custom ? customUrl : (picked?.url || "");
   const tName = custom ? customUrl : (picked?.name || "");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const torConnect = async () => {
     setTorBusy(true); setLogs([]);
@@ -220,7 +221,10 @@ function LayerPanel({ layerKey }) {
       )}
 
       <div className="panel-body">
-        <div className="sidebar">
+        <div className={`sidebar ${sidebarOpen ? 'expanded' : 'collapsed'}`}>
+          <button className="sidebar-toggle" style={{color: c}} onClick={() => setSidebarOpen(o => !o)}>
+            {sidebarOpen ? '▲ HIDE TARGETS' : '▼ SELECT TARGET'}
+          </button>
           <div className="sidebar-head" style={{color:c}}>TARGETS</div>
           <div className="site-list">
             {layer.sites.map((s,i) => (
@@ -352,17 +356,21 @@ export default function App() {
           display: flex; height: 44px;
           background: #0a0a0c; border-bottom: 1px solid #111;
           position: sticky; top: 38px; z-index: 99;
+          overflow-x: auto; overflow-y: hidden;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
         }
+        .layer-tabs::-webkit-scrollbar { display: none; }
         .layer-tab {
-          flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+          flex: 1; min-width: 120px; display: flex; align-items: center; justify-content: center; gap: 8px;
           border: none; background: transparent; cursor: pointer;
-          font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
+          font-family: var(--mono); font-size: 11px; letter-spacing: 2px;
           color: #333; transition: all .2s; position: relative;
-          border-bottom: 2px solid transparent;
+          border-bottom: 2px solid transparent; white-space: nowrap; padding: 0 12px;
         }
         .layer-tab:hover { color: #666; }
         .layer-tab.active { color: var(--primary); border-bottom-color: var(--primary); background: var(--primary)06; }
-        .layer-tab .tab-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+        .layer-tab .tab-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
         .layer-tab .tab-desc { font-size: 8px; letter-spacing: 1px; opacity: .5; text-transform: uppercase; }
 
         .layer-header {
@@ -411,6 +419,12 @@ export default function App() {
         .sidebar {
           border-right: 1px solid #0d0d0d; padding: 16px 0;
           display: flex; flex-direction: column;
+        }
+        .sidebar-toggle {
+          display: none; width: 100%; padding: 8px 16px;
+          font-family: var(--mono); font-size: 9px; letter-spacing: 2px;
+          background: transparent; border: none; border-bottom: 1px solid #0d0d0d;
+          color: #555; cursor: pointer; text-align: left;
         }
         .sidebar-head {
           padding: 0 16px 10px; font-family: var(--mono); font-size: 9px;
@@ -524,8 +538,24 @@ export default function App() {
 
         @media (max-width: 700px) {
           .panel-body { grid-template-columns: 1fr; }
-          .sidebar { border-right: none; border-bottom: 1px solid #0d0d0d; max-height: 240px; overflow-y: auto; }
+          .sidebar {
+            border-right: none; border-bottom: 1px solid #0d0d0d;
+            overflow: hidden; transition: max-height .3s ease;
+          }
+          .sidebar.collapsed { max-height: 42px; }
+          .sidebar.expanded { max-height: 320px; overflow-y: auto; }
+          .sidebar-toggle { display: block; }
+          .sidebar-head { display: none; }
+          .layer-tab .tab-desc { display: none; }
+          .layer-tab { min-width: 100px; font-size: 10px; letter-spacing: 1px; }
+          .main-area { padding: 14px 14px 32px; }
+          .layer-header { padding: 14px 14px 10px; }
+          .controls-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+          .action-btns { width: 100%; }
+          .btn-primary { flex: 1; text-align: center; padding: 10px 8px; font-size: 9px; }
           .topbar-info, .topbar-right .topbar-session { display: none; }
+          .target-url { font-size: 9px; }
+          .chip { padding: 7px 10px; font-size: 8px; }
         }
       `}</style>
 
