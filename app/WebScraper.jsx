@@ -23,14 +23,14 @@ const DEEP_SITES = [
 ];
 
 const DARK_SITES = [
-  { name: "Ahmia Search", url: "https://ahmia.fi", tag: "SEARCH" },
+  { name: "Ahmia Search", url: "http://juhanurmihxlp77nkq76byazcldy2hlmovfu2epvl5ankdibsot4csyd.onion", tag: "SEARCH" },
   { name: "The Hidden Wiki", url: "http://zqktlwiuavvvqqt4ybvgvi7tyo4hjl5xgfuvpdf6otjiycgwqbym2qad.onion", tag: "DIRECTORY" },
   { name: "DuckDuckGo .onion", url: "https://duckduckgogg42xjoc72x3sjasowoarfbgcmvfimaftt6twagswzczad.onion", tag: "SEARCH" },
   { name: "ProtonMail .onion", url: "https://protonmailrmez3lotccipshtkleegetolb73fuirgj7r4o4vfu7ozyd.onion", tag: "EMAIL" },
-  { name: "SecureDrop", url: "https://secrdrop5wyphb5x.onion", tag: "WHISTLEBLOW" },
-  { name: "Torch", url: "http://xmh57jrknzkhv6y3ls3ubitzfqnkrwxhopf5aygthi7d6rplyvk3noyd.onion", tag: "SEARCH" },
-  { name: "OnionShare", url: "https://onionshare.org", tag: "FILES" },
-  { name: "Keybase", url: "https://keybase.io", tag: "IDENTITY" },
+  { name: "SecureDrop Dir", url: "http://sdolvtfhatvsysc6l34d65ymdwxcujausv7k5jk4cy5ttzhjoi6fzvyd.onion", tag: "WHISTLEBLOW" },
+  { name: "Torch Search", url: "http://xmh57jrknzkhv6y3ls3ubitzfqnkrwxhopf5aygthi7d6rplyvk3noyd.onion", tag: "SEARCH" },
+  { name: "OnionShare .onion", url: "http://lldan5gahapx5k7iafb3s4ikijc4ni7gx5iywdflkba5y2eulmwqd.onion", tag: "FILES" },
+  { name: "Tor Project .onion", url: "http://2gzyxa5ihm7nsggfxnu52rck2vv4rvmdlkiu3zzui5du4xyclen53wid.onion", tag: "INFO" },
 ];
 
 const EXTRACTIONS = [
