@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import dbConnect from '@/lib/mongodb';
 import ScrapeResult from '@/lib/models/ScrapeResult';
+import AuditLog from '@/lib/models/AuditLog';
 import { scrapeSurface } from '@/lib/scrapers/surface';
 import { checkRateLimit } from '@/lib/utils/rateLimit';
 
@@ -53,6 +54,8 @@ export async function POST(request) {
       duration: result.duration,
       status: 'success',
     });
+
+    await AuditLog.create({ userId: session.user.id, action: 'scrape', target: url, layer: 'surface', metadata: { extractionType, count: result.data.length } });
 
     return Response.json({
       success: true,

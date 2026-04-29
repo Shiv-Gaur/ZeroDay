@@ -15,20 +15,14 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
-      const res = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
+      const res = await signIn("credentials", { email, password, redirect: false });
       if (res?.error) {
         setError(res.error);
       } else {
         router.push("/dashboard");
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred");
     } finally {
       setLoading(false);
@@ -40,14 +34,11 @@ export default function LoginPage() {
       <div className="auth-container">
         <div className="auth-brand">WEBSCOPE</div>
         <div className="auth-subtitle">MULTI-LAYER WEB INTELLIGENCE</div>
-
         <form onSubmit={handleSubmit} className="auth-form">
           <h1 className="auth-title">Sign In</h1>
-
           {error && <div className="auth-error">{error}</div>}
-
           <div className="auth-field">
-            <label>Email</label>
+            <label htmlFor="login-email">Email</label>
             <input
               id="login-email"
               type="email"
@@ -58,9 +49,8 @@ export default function LoginPage() {
               autoFocus
             />
           </div>
-
           <div className="auth-field">
-            <label>Password</label>
+            <label htmlFor="login-password">Password</label>
             <input
               id="login-password"
               type="password"
@@ -70,28 +60,11 @@ export default function LoginPage() {
               required
             />
           </div>
-
-          <button
-            id="login-submit"
-            type="submit"
-            className="auth-submit"
-            disabled={loading}
-          >
-            {loading ? "AUTHENTICATING..." : "SIGN IN"}
+          <button id="login-submit" type="submit" className="auth-submit" disabled={loading}>
+            {loading ? "SIGNING IN..." : "SIGN IN"}
           </button>
-
-          <button
-            type="button"
-            className="auth-google"
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-          >
-            <span className="google-icon">G</span>
-            Sign in with Google
-          </button>
-
           <div className="auth-link">
-            No account?{" "}
-            <Link href="/register">Create one</Link>
+            No account? <Link href="/register">Create one</Link>
           </div>
         </form>
       </div>

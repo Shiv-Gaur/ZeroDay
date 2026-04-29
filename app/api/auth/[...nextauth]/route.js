@@ -1,10 +1,11 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import GoogleProvider from 'next-auth/providers/google';
 import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/mongodb';
 import User from '@/lib/models/User';
+import AuditLog from '@/lib/models/AuditLog';
 
+// Credentials-only — No external OAuth (Google etc. would leak .onion address)
 export const authOptions = {
   providers: [
     CredentialsProvider({
@@ -17,17 +18,22 @@ export const authOptions = {
         await dbConnect();
 
         const user = await User.findOne({ email: credentials.email });
-        if (!user) {
-          throw new Error('No user found with this email');
-        }
-        if (!user.password) {
-          throw new Error('This account uses Google sign-in. Please use Google to log in.');
-        }
+        if (!user) throw new Error('No account found with this email');
+        if (!user.password) throw new Error('Account has no password set');
 
         const isValid = await bcrypt.compare(credentials.password, user.password);
-        if (!isValid) {
-          throw new Error('Invalid password');
-        }
+        if (!isValid) throw new Error('Invalid password');
+
+        // Update lastActive
+        await User.findByIdAndUpdate(user._id, { lastActive: new Date() });
+
+        // Audit login
+        await AuditLog.create({
+          userId: user._id,
+          action: 'login',
+          target: user.email,
+          metadata: {},
+        });
 
         return {
           id: user._id.toString(),
@@ -37,42 +43,13 @@ export const authOptions = {
         };
       },
     }),
-    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
-      ? [
-          GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-          }),
-        ]
-      : []),
   ],
   pages: {
     signIn: '/login',
     newUser: '/register',
   },
-  session: {
-    strategy: 'jwt',
-  },
+  session: { strategy: 'jwt' },
   callbacks: {
-    async signIn({ user, account }) {
-      if (account?.provider === 'google') {
-        await dbConnect();
-        const existingUser = await User.findOne({ email: user.email });
-        if (!existingUser) {
-          const newUser = await User.create({
-            name: user.name,
-            email: user.email,
-            role: 'user',
-          });
-          user.id = newUser._id.toString();
-          user.role = 'user';
-        } else {
-          user.id = existingUser._id.toString();
-          user.role = existingUser.role;
-        }
-      }
-      return true;
-    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -92,5 +69,4 @@ export const authOptions = {
 };
 
 const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };
